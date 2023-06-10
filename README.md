@@ -20,6 +20,6 @@ To install and run the application, follow these steps:
       
 3. Install the project dependencies:
 
-  ```bash
-  go mod download
+     ```bash
+     go mod download
 
