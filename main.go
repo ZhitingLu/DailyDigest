@@ -1,16 +1,27 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
-	"fmt"
+	"html/template"
+
+	"github.com/joho/godotenv"
 )
 
+var tpl = template.Must(template.ParseFiles("index.html"))
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, World!")
-}
+	tpl.Execute(w, nil)
+  }
+  
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file")
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "3000"
