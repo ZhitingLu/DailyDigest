@@ -1,13 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"net/http"
 	"os"
 	"net/url"
 	"html/template"
-	"fmt"
+	// "fmt"
+	"math"
 	"time"
+	"strconv"
 
 	"github.com/ZhitingLu/dailydigest/news"
 	"github.com/joho/godotenv"
@@ -16,8 +19,22 @@ import (
 var tpl = template.Must(template.ParseFiles("index.html"))
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	tpl.Execute(w, nil)
-  }
+	buf := &bytes.Buffer{}
+	err := tpl.Execute(buf, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	buf.WriteTo(w)
+}
+
+type Search struct {
+	Query string
+	NextPage int
+	TotalPages int
+	Results *news.Results
+}
   
 func searchHandler(newsapi *news.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -40,8 +57,28 @@ func searchHandler(newsapi *news.Client) http.HandlerFunc {
 			return
 		}
 
-		fmt.Printf("%+v", results)
+	nextPage, err := strconv.Atoi(page)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	
+		search := &Search{
+			Query:      searchQuery,
+			NextPage:   nextPage,
+			TotalPages: int(math.Ceil(float64(results.TotalResults / newsapi.PageSize))),
+			Results:    results,
+		}
+
+		buf := &bytes.Buffer{}
+		err = tpl.Execute(buf, search)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		buf.WriteTo(w)
 	}
+
 }
 
 
