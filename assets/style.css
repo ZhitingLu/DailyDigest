@@ -136,6 +136,11 @@ html {
     margin-right: 20px;
   }
   
+  .cat-img {
+    width: 200px;
+    height: auto;
+  }
+
   @media screen and (max-width: 550px) {
     header {
       flex-direction: column;

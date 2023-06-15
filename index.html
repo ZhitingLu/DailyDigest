@@ -36,6 +36,16 @@
           </nav>
       </header>
       <section class="container">
+        <div class="result-count">
+            {{ if .Results }}
+              {{ if (gt .Results.TotalResults 0)}}
+              <p>About <strong>{{ .Results.TotalResults }}</strong> results were found.</p>
+              {{ else if and (ne .Query "") (eq .Results.TotalResults 0) }}
+              <img class="cat-img" src="https://www.lovelocal.in/images/no-results.png" alt="poor cat">
+              <p class="mt-4">No results found for your query: <strong>{{ .Query }}</strong>.</p>
+              {{ end }}
+            {{ end }}
+            </div>
         <ul class="search-results">
           {{ range.Results.Articles }}
           <li class="news-article">
@@ -46,7 +56,7 @@
               <p class="description">{{ .Description }}</p>
               <div class="metadata">
                 <p class="source">{{ .Source.Name }}</p>
-                <time class="published-date">{{ .PublishedAt }}</time>
+                <time class="published-date">{{ .FormatPublishedDate }}</time>
               </div>
             </div>
             <img class="article-image" src="{{ .URLToImage }}" />
