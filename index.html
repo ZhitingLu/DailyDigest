@@ -1,70 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Daily Digest</title>
     <link rel="stylesheet" href="/assets/style.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </head>
-  <body>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
 
     <main>
 
-      <header>
-        <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
-            <div class="container-fluid">
-              <a class="navbar-brand" href="#">Daily Digest</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
-                  </li>
-                </ul>
-                <form class="d-flex" action="/search" method="GET">
-                  <input class="form-control me-2" autofocus type="search" valur="{{ .Query }}" placeholder="Enter a news topic" aria-label="Search" name="q">
-                  <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
-                <a href="https://github.com/ZhitingLu/DailyDigest" class="btn text-primary">View on Github</a>
-              </div>
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">Daily Digest</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                            </li>
+                        </ul>
+                        <form class="d-flex" action="/search" method="GET">
+                            <input class="form-control me-2" autofocus type="search" valur="{{ .Query }}"
+                                placeholder="Enter a news topic" aria-label="Search" name="q">
+                            <button class="btn btn-outline-success" type="submit">Search</button>
+                        </form>
+                        <a href="https://github.com/ZhitingLu/DailyDigest" class="btn text-primary">View on Github</a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <section class="container">
+            <div class="result-count">
+                {{ if .Results }}
+                {{ if (gt .Results.TotalResults 0)}}
+                <p>About <strong>{{ .Results.TotalResults }}</strong> results were found.</p>
+                <p> You are on page <strong>{{ .CurrentPage }}</strong> of
+                    <strong> {{ .TotalPages }}</strong>.
+                </p>
+                {{ else if and (ne .Query "") (eq .Results.TotalResults 0) }}
+                <img class="cat-img" src="https://www.lovelocal.in/images/no-results.png" alt="poor cat">
+                <p class="mt-4">No results found for your query: <strong>{{ .Query }}</strong>.</p>
+                {{ end }}
+                {{ end }}
             </div>
-          </nav>
-      </header>
-      <section class="container">
-        <div class="result-count">
-            {{ if .Results }}
-              {{ if (gt .Results.TotalResults 0)}}
-              <p>About <strong>{{ .Results.TotalResults }}</strong> results were found.</p>
-              {{ else if and (ne .Query "") (eq .Results.TotalResults 0) }}
-              <img class="cat-img" src="https://www.lovelocal.in/images/no-results.png" alt="poor cat">
-              <p class="mt-4">No results found for your query: <strong>{{ .Query }}</strong>.</p>
-              {{ end }}
-            {{ end }}
+            <ul class="search-results">
+                {{ range.Results.Articles }}
+                <li class="news-article">
+                    <div>
+                        <a target="_blank" rel="noreferrer noopener" href="{{.URL}}">
+                            <h4 class="title">{{.Title }}</h4>
+                        </a>
+                        <p class="description">{{ .Description }}</p>
+                        <div class="metadata">
+                            <p class="source">{{ .Source.Name }}</p>
+                            <time class="published-date">{{ .FormatPublishedDate }}</time>
+                        </div>
+                    </div>
+                    <img class="article-image" src="{{ .URLToImage }}" />
+                </li>
+                {{ end }}
+
+            </ul>
+
+            <div class="pagination">
+                {{ if . }}
+                {{ if (gt .NextPage 2) }}
+                <a href="/search?q={{ .Query }}&page={{ .PreviousPage }}" class="button previous-page">Previous</a>
+                {{ end }}
+                {{ if (ne .IsLastPage true) }}
+                <a href="/search?q={{ .Query }}&page={{ .NextPage }}" class="button next-page">Next</a>
+                {{ end }}
+                {{ end }}
             </div>
-        <ul class="search-results">
-          {{ range.Results.Articles }}
-          <li class="news-article">
-            <div>
-              <a target="_blank" rel="noreferrer noopener" href="{{.URL}}">
-                <h4 class="title">{{.Title }}</h4>
-              </a>
-              <p class="description">{{ .Description }}</p>
-              <div class="metadata">
-                <p class="source">{{ .Source.Name }}</p>
-                <time class="published-date">{{ .FormatPublishedDate }}</time>
-              </div>
-            </div>
-            <img class="article-image" src="{{ .URLToImage }}" />
-          </li>
-          {{ end }}
-        </ul>
-      </section>
+        </section>
     </main>
 
-  </body>
+</body>
+
 </html>
